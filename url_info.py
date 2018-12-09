@@ -3,15 +3,21 @@ Created on Dec 9, 2018
 
 @author: bpr
 '''
+#-*- coding: utf-8 -*-
+
 import urllib
 import re 
 
 class Wydanie:
     def __init__(self, url):
+        self.url = url
         self.data = self.getDataFromUrl(url)
         self.date = self.getDate()
         self.title = self.getTitle()
         self.description = self.getDescription()
+    
+    def get(self):
+        return [self.title, self.url, self.description, self.date]
     
     def getDate(self):
         try:
@@ -19,9 +25,11 @@ class Wydanie:
             position = self.data.find(phrase)
             if(position==-1):
                 raise ValueError('Exception in getDate() method. There is no such phrase in the url!')
-            
+
             position += len(phrase)
             date = self.data[position : position+10]
+            separated = date.split('.')
+            date = separated[2]+"."+separated[1]+"."+separated[0]
             return date
             
         except Exception as error:
@@ -72,11 +80,22 @@ def importUrls():
     lines = [line.rstrip('\n') for line in open(filename)]
     return lines
 
+def getAll():
+    lines = importUrls()
+    wydania = []
+    i = 0
+    for line in lines:
+        wydania.append(Wydanie(line))
+        if(i == 1):
+            break
+        i = i + 1
+    return wydania
 
+def getOne():
 
-lines = importUrls()
-a = Wydanie(lines[0])
-print(a.title) 
+    lines = importUrls()
+    a = Wydanie(lines[len(lines)-1])
+    return a
     
     
     
